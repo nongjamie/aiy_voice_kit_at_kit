@@ -33,7 +33,7 @@ def get_hints(language_code):
                 'goodbye',
                 'who is jamie',
                 'repeat after me',
-                'set the coding time for ... minutes')
+                'countdown for ... minutes')
     return None
 
 def locale_language():
@@ -78,18 +78,17 @@ def main():
                 # Remove "repeat after me" from the text to be repeated
                 to_repeat = text.replace('repeat after me','', 1)
                 aiy.voice.tts.say(to_repeat)
-            elif 'set the coding time' in text:
-                to_do_code = text.replace('set the coding time', '', 1)
-                to_do_code = to_do_code.replace('minute', '', 1)
-                to_do_code = to_do_code.replace('minutes', '', 1)
-                minute = int(to_do_code)
+            elif 'countdown for' in text:
+                to_do_code = text.replace('countdown for', '')
+                to_do_code = to_do_code.replace('minutes', '')
+                to_do_code = to_do_code.replace('minute', '')
+                minute = int(to_do_code.strip())
                 now = time.time()
                 future = now + (minute * 60)
                 while(future > now):
                     now = time.time()
                     continue
-                aiy.voice.tts.say('Your coding time is over.')
+                aiy.voice.tts.say('Your countdown is over.')
 
 if __name__ == '__main__':
     main()
-
