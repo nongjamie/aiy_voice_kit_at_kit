@@ -22,9 +22,9 @@ from aiy.board import Board, Led
 from aiy.cloudspeech import CloudSpeechClient
 import aiy.voice.tts
 
-import time
-
-
+# import
+from datetime import datetime
+# import
 def get_hints(language_code):
     if language_code.startswith('en_'):
         return ('turn on the light',
@@ -40,6 +40,18 @@ def locale_language():
     language, _ = locale.getdefaultlocale()
     return language
 
+# greetting part of day
+def greeting_part_of_day():
+    currentDT = datetime.now.hour
+    if 5 <= currentDT <= 11:
+        return "Good morning"
+    elif 12 <= currentDT <= 17:
+        return "Good afternoon"
+    elif 18 <= currentDT <= 22:
+        return "Good evening"
+    else 
+        return "Good night"
+# End
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
@@ -50,6 +62,9 @@ def main():
     logging.info('Initializing for language %s...', args.language)
     hints = get_hints(args.language)
     client = CloudSpeechClient()
+    #name 
+    name = ""
+    #End
     with Board() as board:
         while True:
             if hints:
@@ -59,12 +74,15 @@ def main():
             text = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
             #Set name
-            if name == '':
-                aiy.voice.tts.say('Hi, what is your name')
+            while name == '':
+                aiy.voice.tts.say(greeting_part_of_day(), 'what is your name')
                 logging.info('Say something.')
-                text = client.recognize(language_code=args.language,
+                name_input = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
-                name = text
+                name = name_input
+                if name_input = "":
+                    continue
+            #End
 
             if text is None:
                 logging.info('You said nothing.')
@@ -79,6 +97,8 @@ def main():
             elif 'blink the light' in text:
                 board.led.state = Led.BLINK
             elif 'goodbye' in text:
+                # make reaction to voicekit while turn it off
+                aiy.vocie.tts.say("Good bye", name)
                 break
             elif 'who is jamie' in text:
                 aiy.voice.tts.say('Jamie is hereton friend')
