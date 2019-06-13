@@ -44,13 +44,13 @@ def locale_language():
 def greeting_part_of_day():
     currentDT = datetime.now.hour
     if 5 <= currentDT <= 11:
-        return "Good morning"
+        return 1
     elif 12 <= currentDT <= 17:
-        return "Good afternoon"
+        return 2
     elif 18 <= currentDT <= 22:
-        return "Good evening"
+        return 3
     else: 
-        return "Good night"
+        return 4
 # End
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -77,7 +77,14 @@ def main():
             while name == '':
                 greeting = greeting_part_of_day()
                 # sentence = (greeting, 'what is your name')
-                aiy.voice.tts.say(greeting, 'what is your name')
+                if greeting == 1:
+                    aiy.voice.tts.say("good morning, How may I call you")
+                elif greeting == 2:
+                    aiy.voice.tts.say("good afternoon, How may I call you")
+                elif greeting == 3:
+                    aiy.voice.tts.say("good evening, How may I call you")
+                else:
+                    aiy.voice.tts.say("good night, How may I call you")
                 logging.info('Say something.')
                 name_input = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
