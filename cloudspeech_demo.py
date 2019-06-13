@@ -24,6 +24,28 @@ import aiy.voice.tts
 
 import time
 
+''' Cloud translate setup '''
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/home/pi/cloud_translation.json"
+
+# Imports the Google Cloud client library
+from google.cloud import translate
+
+# Instantiates a client
+translate_client = translate.Client()
+
+# The text to translate
+# text = u'Good afternoon'
+# The target language
+# target = 'ja'
+
+# Translates some text into Japanese
+# translation = translate_client.translate(text,target_language=target)
+
+# Print the result
+# print(u'Text: {}'.format(text))
+# print(u'Translation: {}'.format(translation['translatedText']))
+'''-----------------------'''
 
 def get_hints(language_code):
     if language_code.startswith('en_'):
@@ -33,12 +55,14 @@ def get_hints(language_code):
                 'goodbye',
                 'who is jamie',
                 'repeat after me',
-                'countdown for ... minutes')
+                'countdown for ... minutes'
+                'translate in japanese ...')
     return None
 
 def locale_language():
     language, _ = locale.getdefaultlocale()
     return language
+
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -89,6 +113,11 @@ def main():
                     now = time.time()
                     continue
                 aiy.voice.tts.say('Your countdown is over.')
+            elif 'translate in japanese' in text:
+                to_translate = text.replace('translate in japanese','')
+                translation = translate_client.translate(to_translate,target_language=target)
+                logging.info('English: ' + to_translate)
+                logging.info('Japanese: ' + translation['translatedText'])
 
 if __name__ == '__main__':
     main()
