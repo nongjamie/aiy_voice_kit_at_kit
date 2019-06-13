@@ -49,7 +49,7 @@ def greeting_part_of_day():
         return "Good afternoon"
     elif 18 <= currentDT <= 22:
         return "Good evening"
-    else 
+    else: 
         return "Good night"
 # End
 def main():
@@ -75,12 +75,14 @@ def main():
                                     hint_phrases=hints)
             #Set name
             while name == '':
-                aiy.voice.tts.say(greeting_part_of_day(), 'what is your name')
+                greeting = greeting_part_of_day()
+                # sentence = (greeting, 'what is your name')
+                aiy.voice.tts.say(greeting, 'what is your name')
                 logging.info('Say something.')
                 name_input = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
                 name = name_input
-                if name_input = "":
+                if name_input == "":
                     continue
             #End
 
