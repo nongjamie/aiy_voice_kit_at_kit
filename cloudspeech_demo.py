@@ -42,7 +42,7 @@ def locale_language():
 
 # greetting part of day
 def greeting_part_of_day():
-    currentDT = datetime.now.hour
+    currentDT = datetime.now().hour
     if 5 <= currentDT <= 11:
         return 1
     elif 12 <= currentDT <= 17:
@@ -63,7 +63,7 @@ def main():
     hints = get_hints(args.language)
     client = CloudSpeechClient()
     #name 
-    name = ""
+    name_input = ""
     #End
     with Board() as board:
         while True:
@@ -74,7 +74,7 @@ def main():
             text = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
             #Set name
-            while name == '':
+            if name_input == '':
                 greeting = greeting_part_of_day()
                 # sentence = (greeting, 'what is your name')
                 if greeting == 1:
@@ -88,9 +88,8 @@ def main():
                 logging.info('Say something.')
                 name_input = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
-                name = name_input
-                if name_input == "":
-                    continue
+                repeat_name = name_input.replace('Call me','',1)
+                aiy.voice.tts.say("hello", repeat_name)
             #End
 
             if text is None:
