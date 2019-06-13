@@ -58,6 +58,14 @@ def main():
                 logging.info('Say something.')
             text = client.recognize(language_code=args.language,
                                     hint_phrases=hints)
+            #Set name
+            if name == '':
+                aiy.voice.tts.say('Hi, what is your name')
+                logging.info('Say something.')
+                text = client.recognize(language_code=args.language,
+                                    hint_phrases=hints)
+                name = text
+
             if text is None:
                 logging.info('You said nothing.')
                 continue
@@ -73,7 +81,7 @@ def main():
             elif 'goodbye' in text:
                 break
             elif 'who is jamie' in text:
-                logging.info('Jamie is hereton friend')
+                aiy.voice.tts.say('Jamie is hereton friend')
             elif 'repeat after me' in text:
                 # Remove "repeat after me" from the text to be repeated
                 to_repeat = text.replace('repeat after me','', 1)
@@ -89,6 +97,8 @@ def main():
                     now = time.time()
                     continue
                 aiy.voice.tts.say('Your coding time is over.')
+
+            
 
 if __name__ == '__main__':
     main()
