@@ -23,7 +23,9 @@ from aiy.cloudspeech import CloudSpeechClient
 import aiy.voice.tts
 
 # import
+import time
 from datetime import datetime
+
 # import
 def get_hints(language_code):
     if language_code.startswith('en_'):
@@ -40,7 +42,7 @@ def locale_language():
     language, _ = locale.getdefaultlocale()
     return language
 
-# greetting part of day
+# Greeting part of day
 def greeting_part_of_day():
     currentDT = datetime.now().hour
     if 5 <= currentDT <= 11:
@@ -51,7 +53,7 @@ def greeting_part_of_day():
         return 3
     else: 
         return 4
-# End
+
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
@@ -62,21 +64,20 @@ def main():
     logging.info('Initializing for language %s...', args.language)
     hints = get_hints(args.language)
     client = CloudSpeechClient()
-    #name 
+
+    # User name
     name_input = ""
-    #End
+
     with Board() as board:
         while True:
             if hints:
                 logging.info('Say something, e.g. %s.' % ', '.join(hints))
             else:
                 logging.info('Say something.')
-            text = client.recognize(language_code=args.language,
-                                    hint_phrases=hints)
-            #Set name
+            
+            # Greeting the user
             if name_input == '':
                 greeting = greeting_part_of_day()
-                # sentence = (greeting, 'what is your name')
                 if greeting == 1:
                     aiy.voice.tts.say("good morning, How may I call you")
                 elif greeting == 2:
@@ -85,12 +86,8 @@ def main():
                     aiy.voice.tts.say("good evening, How may I call you")
                 else:
                     aiy.voice.tts.say("good night, How may I call you")
-                logging.info('Say something.')
-                name_input = client.recognize(language_code=args.language,
-                                    hint_phrases=hints)
-                repeat_name = name_input.replace('Call me','',1)
-                aiy.voice.tts.say("hello", repeat_name)
-            #End
+
+            text = client.recognize(language_code=args.language,hint_phrases=hints)
 
             if text is None:
                 logging.info('You said nothing.')
@@ -106,14 +103,21 @@ def main():
                 board.led.state = Led.BLINK
             elif 'goodbye' in text:
                 # make reaction to voicekit while turn it off
-                aiy.vocie.tts.say("Good bye", name)
+                goodbye_string = 'Good bye' + name_input + ', See you again next time.'
+                aiy.voice.tts.say(goodbye_string)
                 break
             elif 'who is jamie' in text:
-                aiy.voice.tts.say('Jamie is hereton friend')
+                aiy.voice.tts.say('Jamie is hereton friend.')
             elif 'repeat after me' in text:
                 # Remove "repeat after me" from the text to be repeated
                 to_repeat = text.replace('repeat after me','', 1)
                 aiy.voice.tts.say(to_repeat)
+            # Set the user name
+            elif 'call me' in text:
+                to_call = text.replace('call me', '')
+                name_input = to_call
+                to_call = 'Hello ' + to_call + ', What can I help you'
+                aiy.voice.tts.say(to_call)
             elif 'countdown for' in text:
                 to_do_code = text.replace('countdown for', '')
                 to_do_code = to_do_code.replace('minutes', '')
