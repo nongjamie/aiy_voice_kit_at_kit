@@ -35,8 +35,8 @@ def get_hints(language_code):
                 'goodbye',
                 'who is jamie',
                 'repeat after me',
-                'countdown for ... minutes'
-                'translate in japanese ...')
+                'countdown for ... minutes',
+                'do some programming')
     return None
 
 def locale_language():
@@ -130,13 +130,32 @@ def main():
                     now = time.time()
                     continue
                 aiy.voice.tts.say('Your countdown is over.')
-            elif 'translate in japanese' in text:
-                to_translate = text.replace('translate in japanese','')
-                translation = translate_client.translate(to_translate,target_language=target)
-                logging.info('English: ' + to_translate)
-                logging.info('Japanese: ' + translation['translatedText'])
-
-            
-
+            elif 'do some programming' in text:
+                aiy.voice.tts.say('I will set the timer for you.')
+                aiy.voice.tts.say('Which unit do you want, minute or hour')
+                text = client.recognize(language_code=args.language,hint_phrases=hints)
+                user_unit = ''
+                user_timer = 0
+                if 'minute' in text.lower():
+                    user_unit = 'm'
+                elif 'hour' in text.lower():
+                    user_unit = 'h'
+                else:
+                    aiy.voice.tts.say('I do not know that units, please try again later.')
+                    continue
+                aiy.voice.tts.say('How long do you want to do programming in ' + text)
+                text = client.recognize(language_code=args.language,hint_phrases=hints)
+                try:
+                    user_timer = int(text.strip())
+                except:
+                    aiy.voice.tts.say('The error occur, please try again')
+                    continue
+                aiy.voice.tts.say('Start timer')
+                if user_unit == 'm':
+                    time.sleep(60 * user_timer)
+                else:
+                    time.sleep(3600 * user_timer)
+                aiy.voice.tts.say('Stop  timer, Your programming time is over. Please take a break.')
+                
 if __name__ == '__main__':
     main()
