@@ -26,6 +26,12 @@ import aiy.voice.tts
 import time
 from datetime import datetime
 
+''' For pi program close function '''
+from subprocess import os
+
+''' For pi shutdown function '''
+from subprocess import call
+
 # import
 def get_hints(language_code):
     if language_code.startswith('en_'):
@@ -36,7 +42,8 @@ def get_hints(language_code):
                 'who is jamie',
                 'repeat after me',
                 'countdown for ... minutes',
-                'do some programming')
+                'do some programming',
+                'shutdown')
     return None
 
 def locale_language():
@@ -106,6 +113,16 @@ def main():
                 # make reaction to voicekit while turn it off
                 goodbye_string = 'Good bye' + name_input + ', See you again next time.'
                 aiy.voice.tts.say(goodbye_string)
+                goodbye_string = 'The program will close'
+                aiy.voice.tts.say(goodbye_string)
+                os.system('sudo service cloudspeech_demo stop')
+                break
+            elif 'shutdown' in text or 'shut down' in text:
+                goodbye_string = 'Good bye' + name_input + ', See you again next time.'
+                aiy.voice.tts.say(goodbye_string)
+                shutdown_string = 'System will shutdown'
+                aiy.voice.tts.say(shutdown_string)
+                call('sudo poweroff', shell=True)
                 break
             elif 'who is jamie' in text:
                 aiy.voice.tts.say('Jamie is hereton friend.')
