@@ -25,6 +25,8 @@ import aiy.voice.tts
 # import
 import time
 from datetime import datetime
+# multiprocess
+from multiprocessing import Process
 
 ''' For pi program close function '''
 from subprocess import os
@@ -61,6 +63,15 @@ def greeting_part_of_day():
         return 3
     else: 
         return 4
+
+# Play Music
+def play_music(str):
+    if (str == 'natural'):
+        os.system('./music/natural.mp4')
+    elif str == 'piano':
+        os.system('./music/piano.mp4')
+    else:
+        return 0
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -173,6 +184,12 @@ def main():
                 else:
                     time.sleep(3600 * user_timer)
                 aiy.voice.tts.say('Stop  timer, Your programming time is over. Please take a break.')
+            elif 'play' or 'song' in text:
+                to_play = text.replace('play', '')
+                to_play = text.replace('song', '')
+                to_play = text.strip()
+                p = Process(target = play_music, args = (to_play))
+                p.Start()
                 
 if __name__ == '__main__':
     main()
