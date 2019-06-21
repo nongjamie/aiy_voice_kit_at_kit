@@ -41,15 +41,16 @@ from subprocess import call
 # import
 def get_hints(language_code):
     if language_code.startswith('en_'):
-        return ('turn on the light',
-                'turn off the light',
-                'blink the light',
-                'goodbye',
-                'who is jamie',
-                'repeat after me',
-                'countdown for ... minutes',
-                'do some programming',
-                'shutdown')
+        return ('\n\tturn on the light',
+                '\n\tturn off the light',
+                '\n\tblink the light',
+                '\n\tgoodbye',
+                '\n\twho is jamie',
+                '\n\trepeat after me',
+                '\n\tcountdown for ... minutes',
+                '\n\tdo some programming',
+                '\n\tplay/stop the song',
+                '\n\tshutdown')
     return None
 
 def locale_language():
@@ -69,16 +70,20 @@ def greeting_part_of_day():
         return 4
 
 # Play Music
-def play_music(str):
+def play_music(status, str):
     if (str == 'natural'):
-        os.system('./music/natural.mp4')
+        # os.system('./music/natural.mp4')
+        mixer.init()
+        mixer.music.load('./music/natural-song.mp3')
+        mixer.music.play()
     elif str == 'piano':
         # os.system('./music/piano-song.mp3')
         mixer.init()
-        mixer.music.load('./music/piano_song.mp3')
-        mixer.music.play()
+        mixer.music.load('./music/piano-song.mp3')
+        mixer.music.play() if status == 'play' else mixer.music.stop()
     else:
         return 0
+        
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -92,7 +97,10 @@ def main():
     client = CloudSpeechClient()
 
     # User name
-    name_input = "jimmy"
+    name_input = ""
+    
+    # Song status
+    song_status = 'not play'
 
     with Board() as board:
         while True:
@@ -191,13 +199,30 @@ def main():
                 else:
                     time.sleep(3600 * user_timer)
                 aiy.voice.tts.say('Stop  timer, Your programming time is over. Please take a break.')
-            elif 'play' or 'song' in text:
-                # to_play = text.replace('play', '')
-                # to_play = text.replace('song', '')
-                # to_play = text.strip()
-                play_music('piano')
-                #p = Process(target = play_music, args = (to_play))
-                #p.start()
+            elif 'play the song' in text:
+                if song_status == 'not play':
+                    aiy.voice.tts.say('What kind of song do you want to play, piano or natural song')
+                    text = client.recognize(language_code=args.language,hint_phrases=hints)
+                    song_kind = ''
+                    if 'piano' in text:
+                        song_kind = 'piano'
+                        song_status = 'play'
+                    elif 'natural' in text:
+                        song_kind = 'natural'
+                        song_status = 'play'
+                    if song_kind == '':
+                        aiy.voice.tts.say('I do not know that kind, please try again later.')
+                    else:
+                        aiy.voice.tts.say('The song starts')
+                        play_music(song_status, song_kind)
+                        song_kind = ''
+            elif 'stop' in text:
+                if song_status == 'play':
+                    song_status = 'not play'
+                    play_music(song_status, 'piano')
+                    aiy.voice.tts.say('The song stops')
+                # p = Process(target = play_music, args = ('piano'))
+                # p.start()
                 
 if __name__ == '__main__':
     main()
