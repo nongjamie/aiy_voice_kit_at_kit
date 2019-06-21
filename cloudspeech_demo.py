@@ -195,9 +195,9 @@ def main():
                 # to_play = text.replace('play', '')
                 # to_play = text.replace('song', '')
                 # to_play = text.strip()
-                play_music('piano')
-                #p = Process(target = play_music, args = (to_play))
-                #p.start()
+                # play_music('piano')
+                p = Process(target = play_music, args = ('piano'))
+                p.start()
                 
 if __name__ == '__main__':
     main()
