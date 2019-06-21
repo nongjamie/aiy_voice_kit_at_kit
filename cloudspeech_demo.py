@@ -25,8 +25,12 @@ import aiy.voice.tts
 # import
 import time
 from datetime import datetime
+
 # multiprocess
 from multiprocessing import Process
+
+''' For playing the music '''
+from pygame import mixer
 
 ''' For pi program close function '''
 from subprocess import os
@@ -69,7 +73,10 @@ def play_music(str):
     if (str == 'natural'):
         os.system('./music/natural.mp4')
     elif str == 'piano':
-        os.system('./music/piano.mp4')
+        # os.system('./music/piano-song.mp3')
+        mixer.init()
+        mixer.music.load('./music/piano_song.mp3')
+        mixer.music.play()
     else:
         return 0
 
@@ -85,7 +92,7 @@ def main():
     client = CloudSpeechClient()
 
     # User name
-    name_input = ""
+    name_input = "jimmy"
 
     with Board() as board:
         while True:
@@ -185,11 +192,12 @@ def main():
                     time.sleep(3600 * user_timer)
                 aiy.voice.tts.say('Stop  timer, Your programming time is over. Please take a break.')
             elif 'play' or 'song' in text:
-                to_play = text.replace('play', '')
-                to_play = text.replace('song', '')
-                to_play = text.strip()
-                p = Process(target = play_music, args = (to_play))
-                p.Start()
+                # to_play = text.replace('play', '')
+                # to_play = text.replace('song', '')
+                # to_play = text.strip()
+                play_music('piano')
+                #p = Process(target = play_music, args = (to_play))
+                #p.start()
                 
 if __name__ == '__main__':
     main()
